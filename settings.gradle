@@ -1,0 +1,5 @@
+rootProject.name = 'concept-cloud'
+include 'concept-cloud-usage'
+include 'concept-cloud-web'
+include 'concept-domain-basic'
+

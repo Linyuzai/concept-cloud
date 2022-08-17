@@ -1,0 +1,12 @@
+
+version = "${ConceptCloudWebVersion}"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly project(':concept-cloud-usage')
+    compileOnly "org.springframework.boot:spring-boot-starter-web:${SpringBootVersion}"
+    //compileOnly "org.springframework.boot:spring-boot-starter-webflux:${SpringBootVersion}"
+}
