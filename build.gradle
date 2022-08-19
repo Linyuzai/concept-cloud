@@ -4,6 +4,7 @@ allprojects {
         set('ConceptCloudUsageVersion', '1.0.0')
         set('ConceptCloudWebVersion', '1.0.0')
         set('ConceptDomainBasicVersion', '1.0.0')
+        set('ConceptDomainSystemVersion', '1.0.0')
     }
 
     ext {
@@ -11,6 +12,7 @@ allprojects {
         set('SpringBootVersion', '2.7.1')
         set('LombokVersion', '1.18.22')
         set('Swagger3Version', '2.2.1')
+        set('MybatisPlusVersion', "3.5.1")
 
         set('springDependencyManagementVersion', "1.0.11.RELEASE")
         set('springCloudVersion', "3.1.1")
@@ -38,6 +40,11 @@ allprojects {
     }
 
     dependencies {
+
+        compileOnly "org.springframework.boot:spring-boot-starter-web:${SpringBootVersion}"
+        //compileOnly "org.springframework.boot:spring-boot-starter-webflux:${SpringBootVersion}"
+        compileOnly "com.baomidou:mybatis-plus-boot-starter:${MybatisPlusVersion}"
+
         compileOnly "io.swagger.core.v3:swagger-annotations:${Swagger3Version}"
         compileOnly "org.projectlombok:lombok:${LombokVersion}"
         annotationProcessor "org.projectlombok:lombok:${LombokVersion}"

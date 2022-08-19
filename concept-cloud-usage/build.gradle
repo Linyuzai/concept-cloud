@@ -11,5 +11,5 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.springframework:spring-core:${SpringVersion}"
+    //compileOnly "org.springframework:spring-core:${SpringVersion}"
 }

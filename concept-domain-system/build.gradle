@@ -1,0 +1,9 @@
+version = "${ConceptDomainSystemVersion}"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly project(':concept-domain-basic')
+}
