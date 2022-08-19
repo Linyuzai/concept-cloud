@@ -1,15 +1,16 @@
 package com.github.linyuzai.concept.domain.system.module.information;
 
 import com.github.linyuzai.concept.domain.basic.DomainEntity;
-import com.github.linyuzai.concept.domain.basic.DomainValue;
 import lombok.Getter;
 
 @Getter
-public class Information implements DomainValue {
+public class Information implements DomainEntity {
 
-    protected String key;
+    protected String id;
 
     protected String name;
+
+    protected String gender;
 
     protected String phone;
 

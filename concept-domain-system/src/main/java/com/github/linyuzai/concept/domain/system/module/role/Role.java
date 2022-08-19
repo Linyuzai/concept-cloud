@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
@@ -38,7 +39,7 @@ public class Role implements DomainEntity {
 
         protected String name;
 
-        protected Collection<? extends Authority> authorities;
+        protected Collection<Authority> authorities;
 
         public Builder id(String id) {
             this.id = id;
@@ -51,7 +52,7 @@ public class Role implements DomainEntity {
         }
 
         public Builder authorities(Collection<? extends Authority> authorities) {
-            this.authorities = authorities;
+            this.authorities = new ArrayList<>(authorities);
             return this;
         }
     }

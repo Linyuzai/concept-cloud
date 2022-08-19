@@ -4,14 +4,6 @@ import com.github.linyuzai.concept.domain.basic.AbstractDomainBuilder;
 import com.github.linyuzai.concept.domain.basic.DomainValue;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 @Getter
 public class Authority implements DomainValue {
 
