@@ -1,33 +1,54 @@
 package com.github.linyuzai.concept.domain.system.module.authority.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.linyuzai.concept.domain.system.module.authority.Authority;
-import com.github.linyuzai.concept.domain.system.module.authority.AuthorityRepository;
-import com.github.linyuzai.concept.domain.system.module.authority.AuthoritySearcher;
-import com.github.linyuzai.concept.domain.system.module.authority.AuthorityVO;
+import com.github.linyuzai.concept.domain.system.module.authority.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Getter
+@RequiredArgsConstructor
+@Repository
 public class ClassPathAuthorityRepository implements AuthorityRepository, AuthoritySearcher {
 
-    private final Authority authority;
+    @Autowired
+    protected AuthorityFacadeAdapter<AuthorityPO> facadeAdapter;
 
-    public ClassPathAuthorityRepository(String path) {
-        this(path, new ObjectMapper());
-    }
+    protected final String path;
+
+    protected ObjectMapper objectMapper;
+
+    protected AuthorityPO tree;
+
+    protected Map<String, Authority> authorities;
 
     @SneakyThrows
-    public ClassPathAuthorityRepository(String path, ObjectMapper objectMapper) {
+    @PostConstruct
+    public void init() {
         ClassPathResource resource = new ClassPathResource(path);
         try (InputStream is = resource.getInputStream()) {
-            AuthorityPO read = objectMapper.readValue(is, AuthorityPO.class);
-            authority = read.toAuthority();
+            tree = objectMapper.readValue(is, AuthorityPO.class);
+            authorities = new LinkedHashMap<>();
+            convert(tree, authorities);
+        }
+    }
+
+    protected void convert(AuthorityPO po, Map<String, Authority> map) {
+        if (map.containsKey(po.getKey())) {
+            throw new IllegalArgumentException("Key duplicated");
+        }
+        Authority authority = facadeAdapter.po2do(po);
+        map.put(authority.getKey(), authority);
+        for (AuthorityPO child : po.getChildren()) {
+            convert(child, map);
         }
     }
 
@@ -47,30 +68,26 @@ public class ClassPathAuthorityRepository implements AuthorityRepository, Author
     }
 
     @Override
-    public Authority get(String unique) {
-        return authority.get(unique);
+    public Authority get(String key) {
+        return authorities.get(key);
     }
 
     @Override
-    public Collection<? extends Authority> select(Collection<? extends String> uniques) {
-        List<Authority> authorities = new ArrayList<>();
-        for (String unique : uniques) {
-            Authority get = authority.get(unique);
-            if (get == null) {
-                continue;
-            }
-            authorities.add(get);
-        }
-        return Collections.unmodifiableCollection(authorities);
+    public Collection<? extends Authority> select(Collection<? extends String> keys) {
+        Set<String> keySet = new HashSet<>(keys);
+        return Collections.unmodifiableCollection(authorities.values()
+                .stream()
+                .filter(it -> keySet.contains(it.getKey()))
+                .collect(Collectors.toSet()));
     }
 
     @Override
     public Collection<? extends Authority> all() {
-        return Collections.unmodifiableCollection(authority.getChildren());
+        return Collections.unmodifiableCollection(authorities.values());
     }
 
     @Override
     public Collection<? extends AuthorityVO> tree(String name) {
-        return AuthorityVO.from(authority.search(name)).getChildren();
+        return facadeAdapter.po2vo(tree.search(name)).getChildren();
     }
 }

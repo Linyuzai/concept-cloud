@@ -16,6 +16,10 @@ public class User implements DomainEntity {
 
     protected Information information;
 
+    public boolean hasAuthority(String key) {
+        return account.hasAuthority(key);
+    }
+
     public static class Builder extends AbstractDomainBuilder<User> {
 
         protected String id;

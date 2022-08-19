@@ -21,7 +21,20 @@ public class Account implements DomainEntity {
 
     protected Status status;
 
-    protected Collection<? extends Role> roles;
+    protected Collection<Role> roles;
+
+    public Collection<? extends Role> getRoles() {
+        return roles;
+    }
+
+    public boolean hasAuthority(String key) {
+        for (Role role : roles) {
+            if (role.hasAuthority(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public enum Status {
 

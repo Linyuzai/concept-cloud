@@ -1,13 +1,12 @@
 package com.github.linyuzai.concept.domain.system.module.authority.file;
 
-import com.github.linyuzai.concept.domain.system.module.authority.Authority;
-import lombok.Getter;
+import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
-@Getter
+@Data
 public class AuthorityPO {
 
     protected String key;
@@ -18,14 +17,30 @@ public class AuthorityPO {
 
     protected Collection<AuthorityPO> children;
 
-    public Authority toAuthority() {
-        return new Authority.Builder()
-                .key(key)
-                .name(name)
-                .pattern(pattern)
-                .children(children.stream()
-                        .map(AuthorityPO::toAuthority)
-                        .collect(Collectors.toList()))
-                .build();
+    public AuthorityPO search(String name) {
+        return search(this, authority -> authority.getName().contains(name));
+    }
+
+    public AuthorityPO search(Predicate<AuthorityPO> predicate) {
+        return search(this, predicate);
+    }
+
+    protected AuthorityPO search(AuthorityPO authority, Predicate<AuthorityPO> predicate) {
+        AuthorityPO po = new AuthorityPO();
+        po.setKey(authority.getKey());
+        po.setName(authority.getName());
+        po.setPattern(authority.getPattern());
+        po.setChildren(new ArrayList<>());
+        for (AuthorityPO child : authority.getChildren()) {
+            AuthorityPO searched = search(child, predicate);
+            if (searched != null) {
+                po.getChildren().add(searched);
+            }
+        }
+        if (!po.getChildren().isEmpty() || predicate.test(po)) {
+            return po;
+        } else {
+            return null;
+        }
     }
 }

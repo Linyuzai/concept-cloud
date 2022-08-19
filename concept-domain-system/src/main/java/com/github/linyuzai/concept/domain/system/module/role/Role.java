@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,7 +20,17 @@ public class Role implements DomainEntity {
 
     protected String name;
 
-    protected Collection<? extends Authority> authorities;
+    protected Collection<Authority> authorities;
+
+    public Collection<? extends Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public boolean hasAuthority(String key) {
+        Map<String, Authority> authorityMap = authorities.stream()
+                .collect(Collectors.toMap(Authority::getKey, Function.identity()));
+        return authorityMap.containsKey(key);
+    }
 
     public static class Builder extends AbstractDomainBuilder<Role> {
 
