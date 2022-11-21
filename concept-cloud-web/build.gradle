@@ -1,4 +1,11 @@
-version = "${ConceptCloudWebVersion}"
+version = '0.0.1'
+
+ext {
+    set('publishName', 'Conecpt Cloud Web')
+    set('publishDescription', 'Extensions for Spring Web')
+}
 
 dependencies {
 }
+
+apply from: '../publish.gradle'
