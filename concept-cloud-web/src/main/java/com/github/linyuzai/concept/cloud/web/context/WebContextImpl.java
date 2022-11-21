@@ -8,14 +8,6 @@ public class WebContextImpl implements WebContext {
 
     private final Map<Object, Object> context = new LinkedHashMap<>();
 
-    public WebContextImpl() {
-        WebContext c = global().get(WebContext.class);
-        if (c != null) {
-            context.putAll(c.all());
-        }
-        global().put(WebContext.class, this);
-    }
-
     @Override
     public WebContext put(Object key, Object value) {
         context.put(key, value);

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.springframework.core.MethodParameter;
 
 import java.lang.reflect.Method;
 
@@ -18,7 +19,11 @@ public class ResultMessageResponseInterceptor implements WebResponseInterceptor 
     @SneakyThrows
     @Override
     public void intercept(WebContext context) {
-        Method method = context.get(Method.class);
+        MethodParameter parameter = context.get(MethodParameter.class);
+        Method method = parameter.getMethod();
+        if (method == null) {
+            return;
+        }
         ResultMessage annotation = method.getAnnotation(ResultMessage.class);
         if (annotation == null) {
             return;

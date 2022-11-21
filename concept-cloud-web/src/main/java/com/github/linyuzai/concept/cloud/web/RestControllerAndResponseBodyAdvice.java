@@ -68,14 +68,14 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
     }
 
     @ExceptionHandler({Throwable.class})
-    public Object handleException(HttpServletRequest request, ServerHttpResponse response, Throwable e) {
+    public Object handleException(HttpServletRequest request, HttpServletResponse response, Throwable e) {
         WebContext context = webContextFactory.create()
                 .put(HttpServletRequest.class, request)
                 .put(HttpServletResponse.class, response)
                 .put(Throwable.class, e);
         WebInterceptorChain chain = webInterceptorChainFactory.create(errorInterceptors);
         chain.next(context);
-        return context.get(Throwable.class);
+        return context.get(Throwable.class, e);
     }
 
     @Override
@@ -95,6 +95,8 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
                 .put(ServerHttpRequest.class, request)
                 .put(ServerHttpResponse.class, response)
                 .put(MethodParameter.class, returnType)
+                .put(MediaType.class, selectedContentType)
+                .put(HttpMessageConverter.class, selectedConverterType)
                 .put(WebContext.Key.RESPONSE_BODY, body);
         WebInterceptorChain chain = webInterceptorChainFactory.create(responseInterceptors);
         chain.next(context);

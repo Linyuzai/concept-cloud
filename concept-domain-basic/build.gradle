@@ -1,9 +1,5 @@
 version = "${ConceptDomainBasicVersion}"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
 
 }

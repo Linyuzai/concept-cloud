@@ -1,9 +1,4 @@
-
 version = "${ConceptCloudWebVersion}"
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
 }

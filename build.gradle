@@ -1,36 +1,21 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.3'
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+}
+
 allprojects {
 
     ext {
-        set('ConceptCloudUsageVersion', '1.0.0')
-        set('ConceptCloudWebVersion', '1.0.0')
-        set('ConceptDomainBasicVersion', '1.0.0')
-        set('ConceptDomainSystemVersion', '1.0.0')
-    }
-
-    ext {
-        set('SpringVersion', '5.3.21')
-        set('SpringBootVersion', '2.7.1')
-        set('LombokVersion', '1.18.22')
-        set('Swagger3Version', '2.2.1')
-        set('MybatisPlusVersion', "3.5.1")
-
-        set('springDependencyManagementVersion', "1.0.11.RELEASE")
-        set('springCloudVersion', "3.1.1")
-        set('springCloudDependencyManagementVersion', "2021.0.1")
-        set('springWebVersion', "5.3.15")
-        set('kotlinVersion', "1.6.10")
-        set('dokkaVersion', "1.6.0")
-        set('reactorVersion', "3.4.14")
-        set('coroutinesVersion', "1.5.0")
-        set('cglibVersion', "3.3.0")
-        set('okhttpVersion', "4.9.3")
-        set('jacksonVersion', "2.13.1")
-        set('nettyVersion', "4.1.72.Final")
-        set('xnioVersion', "3.8.6.Final")
-        set('javaxWebsocketVersion', "1.1")
+        set('ConceptCloudUsageVersion', '0.0.1')
+        set('ConceptCloudWebVersion', '0.0.1')
+        set('ConceptDomainBasicVersion', '0.0.1')
+        set('ConceptDomainSystemVersion', '0.0.1')
+        set('ConceptSample', '0.0.1')
     }
 
     apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
     group = 'com.github.linyuzai'
     sourceCompatibility = '1.8'
@@ -41,13 +26,20 @@ allprojects {
 
     dependencies {
 
-        compileOnly "org.springframework.boot:spring-boot-starter-web:${SpringBootVersion}"
-        //compileOnly "org.springframework.boot:spring-boot-starter-webflux:${SpringBootVersion}"
-        compileOnly "com.baomidou:mybatis-plus-boot-starter:${MybatisPlusVersion}"
+        compileOnly 'org.springframework.boot:spring-boot-starter-web'
+        //compileOnly 'org.springframework.boot:spring-boot-starter-webflux'
+        compileOnly 'com.baomidou:mybatis-plus-boot-starter:3.5.2'
+        compileOnly 'io.swagger.core.v3:swagger-annotations:2.2.6'
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+    }
 
-        compileOnly "io.swagger.core.v3:swagger-annotations:${Swagger3Version}"
-        compileOnly "org.projectlombok:lombok:${LombokVersion}"
-        annotationProcessor "org.projectlombok:lombok:${LombokVersion}"
+    //依赖管理
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2021.0.4'
+            //mavenBom 'com.alibaba.cloud:spring-cloud-alibaba-dependencies:2021.1'
+        }
     }
 
     tasks.withType(JavaCompile) {
