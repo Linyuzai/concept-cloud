@@ -17,7 +17,7 @@ public class WebResult implements Serializable {
 
     private boolean success;
 
-    private int code;
+    private String code;
 
     private String message;
 

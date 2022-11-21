@@ -20,6 +20,8 @@ public interface WebContext {
 
     <V> V get(Object key);
 
+    <V> V get(Object key, V defaultValue);
+
     Map<Object, Object> all();
 
     void reset();
@@ -40,6 +42,8 @@ public interface WebContext {
     enum Key {
 
         RESPONSE_BODY,
+
+        RESPONSE_WRAPPED,
 
         RESULT_SUCCESS,
 

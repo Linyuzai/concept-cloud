@@ -10,7 +10,9 @@ public class WebContextImpl implements WebContext {
 
     public WebContextImpl() {
         WebContext c = global().get(WebContext.class);
-        context.putAll(c.all());
+        if (c != null) {
+            context.putAll(c.all());
+        }
         global().put(WebContext.class, this);
     }
 
@@ -23,6 +25,11 @@ public class WebContextImpl implements WebContext {
     @Override
     public <V> V get(Object key) {
         return (V) context.get(key);
+    }
+
+    @Override
+    public <V> V get(Object key, V defaultValue) {
+        return (V) context.getOrDefault(key, defaultValue);
     }
 
     @Override

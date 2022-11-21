@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.springframework.core.MethodParameter;
 
 import java.lang.reflect.Method;
 
@@ -19,8 +20,6 @@ import java.lang.reflect.Method;
 @AllArgsConstructor
 public class StringTypeResponseInterceptor implements WebResponseInterceptor {
 
-    public static final int ORDER_STRING_TYPE = 2000;
-
     private ObjectMapper objectMapper;
 
     public StringTypeResponseInterceptor() {
@@ -30,15 +29,22 @@ public class StringTypeResponseInterceptor implements WebResponseInterceptor {
     @SneakyThrows
     @Override
     public void intercept(WebContext context) {
-        Method method = context.get(Method.class);
+        MethodParameter parameter = context.get(MethodParameter.class);
+        Method method = parameter.getMethod();
+        if (method == null) {
+            return;
+        }
         if (method.getReturnType() == String.class) {
             Object body = context.get(WebContext.Key.RESPONSE_BODY);
+            if (body == null || body instanceof String) {
+                return;
+            }
             context.put(WebContext.Key.RESPONSE_BODY, objectMapper.writeValueAsString(body));
         }
     }
 
     @Override
-    public int getDefaultOrder() {
-        return ORDER_STRING_TYPE;
+    public int getOrder() {
+        return Order.STRING_TYPE;
     }
 }

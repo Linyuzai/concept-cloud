@@ -9,5 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ResultMessage {
 
-    String success() default "success";
+    String success() default "";
+
+    String failure() default "";
 }

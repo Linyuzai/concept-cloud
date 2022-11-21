@@ -3,6 +3,7 @@ package com.github.linyuzai.concept.cloud.web.context;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class GlobalWebContext implements WebContext {
 
     //TODO TransmittableThreadLocal
@@ -20,10 +21,14 @@ public class GlobalWebContext implements WebContext {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <V> V get(Object key) {
         return (V) CONTEXT.get().get(key);
+    }
+
+    @Override
+    public <V> V get(Object key, V defaultValue) {
+        return (V) CONTEXT.get().getOrDefault(key, defaultValue);
     }
 
     @Override

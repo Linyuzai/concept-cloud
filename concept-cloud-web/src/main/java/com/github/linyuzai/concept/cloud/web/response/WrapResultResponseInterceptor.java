@@ -18,8 +18,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class WrapResultResponseInterceptor implements WebResponseInterceptor {
 
-    public static final int ORDER_WRAP_RESULT = 1000;
-
     private WebResultFactoryAdapter webResultFactoryAdapter;
 
     @Override
@@ -28,13 +26,17 @@ public class WrapResultResponseInterceptor implements WebResponseInterceptor {
         if (body instanceof WebResult) {
             return;
         }
+        boolean wrapped = context.get(WebContext.Key.RESPONSE_WRAPPED, false);
+        if (wrapped) {
+            return;
+        }
         WebResultFactory factory = webResultFactoryAdapter.getWebResultFactory(context);
-        WebResult webResult = factory.create(context);
+        Object webResult = factory.create(context);
         context.put(WebContext.Key.RESPONSE_BODY, webResult);
     }
 
     @Override
-    public int getDefaultOrder() {
-        return ORDER_WRAP_RESULT;
+    public int getOrder() {
+        return Order.WRAP_RESULT;
     }
 }

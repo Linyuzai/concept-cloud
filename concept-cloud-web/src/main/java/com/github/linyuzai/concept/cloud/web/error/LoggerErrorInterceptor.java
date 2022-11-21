@@ -13,8 +13,6 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class LoggerErrorInterceptor implements WebErrorInterceptor {
 
-    public static final int ORDER_LOGGER_ERROR = Ordered.HIGHEST_PRECEDENCE + 1000;
-
     private Function<WebContext, String> messageProvider;
 
     public LoggerErrorInterceptor() {
@@ -31,7 +29,7 @@ public class LoggerErrorInterceptor implements WebErrorInterceptor {
     }
 
     @Override
-    public int getDefaultOrder() {
-        return ORDER_LOGGER_ERROR;
+    public int getOrder() {
+        return Order.LOGGER_ERROR;
     }
 }

@@ -6,5 +6,4 @@ repositories {
 }
 
 dependencies {
-    compileOnly project(':concept-cloud-usage')
 }

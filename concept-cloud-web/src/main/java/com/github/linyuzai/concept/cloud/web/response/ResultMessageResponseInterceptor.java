@@ -15,8 +15,6 @@ import java.lang.reflect.Method;
 @AllArgsConstructor
 public class ResultMessageResponseInterceptor implements WebResponseInterceptor {
 
-    public static final int ORDER_RESULT_MESSAGE = 0;
-
     @SneakyThrows
     @Override
     public void intercept(WebContext context) {
@@ -25,12 +23,16 @@ public class ResultMessageResponseInterceptor implements WebResponseInterceptor 
         if (annotation == null) {
             return;
         }
-        String success = annotation.success();
+        boolean success = context.get(WebContext.Key.RESULT_SUCCESS, true);
+        String message = success ? annotation.success() : annotation.failure();
+        if (message.isEmpty()) {
+            return;
+        }
         context.put(WebContext.Key.RESULT_MESSAGE, success);
     }
 
     @Override
-    public int getDefaultOrder() {
-        return ORDER_RESULT_MESSAGE;
+    public int getOrder() {
+        return Order.RESULT_MESSAGE;
     }
 }

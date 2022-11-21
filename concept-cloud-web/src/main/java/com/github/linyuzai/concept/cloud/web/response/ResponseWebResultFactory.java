@@ -12,14 +12,14 @@ public class ResponseWebResultFactory implements WebResultFactory {
     }
 
     @Override
-    public WebResult create(WebContext context) {
+    public Object create(WebContext context) {
         Object body = context.get(WebContext.Key.RESPONSE_BODY);
-        Boolean success = context.get(WebContext.Key.RESULT_SUCCESS);
-        Integer code = context.get(WebContext.Key.RESULT_CODE);
+        boolean success = context.get(WebContext.Key.RESULT_SUCCESS, true);
+        String code = context.get(WebContext.Key.RESULT_CODE);
         String message = context.get(WebContext.Key.RESULT_MESSAGE);
         return WebResult.builder()
-                .success(success == null || success)
-                .code(code == null ? 0 : code)
+                .success(success)
+                .code(code)
                 .message(message)
                 .object(body)
                 .build();
