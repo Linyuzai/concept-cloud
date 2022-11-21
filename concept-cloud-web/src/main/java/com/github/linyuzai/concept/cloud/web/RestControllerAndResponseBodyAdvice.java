@@ -5,8 +5,6 @@ import com.github.linyuzai.concept.cloud.web.context.WebContextFactory;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebInterceptor;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebInterceptorChain;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebInterceptorChainFactory;
-import com.github.linyuzai.concept.cloud.web.interceptor.WebInterceptorChainImpl;
-import lombok.AllArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -21,13 +19,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @RestControllerAdvice
 public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
@@ -75,7 +71,7 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
                 .put(Throwable.class, e);
         WebInterceptorChain chain = webInterceptorChainFactory.create(errorInterceptors);
         chain.next(context);
-        return context.get(Throwable.class, e);
+        return context.get(WebContext.Key.RESPONSE_BODY, e);
     }
 
     @Override
