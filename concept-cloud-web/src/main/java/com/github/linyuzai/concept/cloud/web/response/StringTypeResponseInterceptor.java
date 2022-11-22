@@ -2,6 +2,7 @@ package com.github.linyuzai.concept.cloud.web.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.linyuzai.concept.cloud.web.context.WebContext;
+import com.github.linyuzai.concept.cloud.web.interceptor.WebChainInterceptor;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebResponseInterceptor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.lang.reflect.Method;
 @Getter
 @Setter
 @AllArgsConstructor
-public class StringTypeResponseInterceptor implements WebResponseInterceptor {
+public class StringTypeResponseInterceptor implements WebResponseInterceptor, WebChainInterceptor {
 
     private ObjectMapper objectMapper;
 

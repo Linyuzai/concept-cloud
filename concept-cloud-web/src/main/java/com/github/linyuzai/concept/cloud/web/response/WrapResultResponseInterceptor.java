@@ -1,6 +1,7 @@
 package com.github.linyuzai.concept.cloud.web.response;
 
 import com.github.linyuzai.concept.cloud.web.context.WebContext;
+import com.github.linyuzai.concept.cloud.web.interceptor.WebChainInterceptor;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebResponseInterceptor;
 import com.github.linyuzai.concept.cloud.web.result.WebResult;
 import com.github.linyuzai.concept.cloud.web.result.WebResultFactory;
@@ -16,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class WrapResultResponseInterceptor implements WebResponseInterceptor {
+public class WrapResultResponseInterceptor implements WebResponseInterceptor, WebChainInterceptor {
 
     private WebResultFactoryAdapter webResultFactoryAdapter;
 

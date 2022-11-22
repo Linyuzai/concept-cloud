@@ -1,6 +1,7 @@
 package com.github.linyuzai.concept.cloud.web.response;
 
 import com.github.linyuzai.concept.cloud.web.context.WebContext;
+import com.github.linyuzai.concept.cloud.web.interceptor.WebChainInterceptor;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebResponseInterceptor;
 import com.github.linyuzai.concept.cloud.web.result.ResultMessage;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import java.lang.reflect.Method;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ResultMessageResponseInterceptor implements WebResponseInterceptor {
+public class ResultMessageResponseInterceptor implements WebResponseInterceptor, WebChainInterceptor {
 
     @SneakyThrows
     @Override

@@ -1,9 +1,10 @@
 package com.github.linyuzai.concept.cloud.web.error;
 
 import com.github.linyuzai.concept.cloud.web.context.WebContext;
+import com.github.linyuzai.concept.cloud.web.interceptor.WebChainInterceptor;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebErrorInterceptor;
 
-public class ExceptionResultErrorInterceptor implements WebErrorInterceptor {
+public class ExceptionResultErrorInterceptor implements WebErrorInterceptor, WebChainInterceptor {
 
     @Override
     public void intercept(WebContext context) {

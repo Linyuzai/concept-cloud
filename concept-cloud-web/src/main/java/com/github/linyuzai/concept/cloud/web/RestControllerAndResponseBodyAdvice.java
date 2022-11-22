@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
+    private final WebConceptProperties properties;
+
     private final WebContextFactory webContextFactory;
 
     private final WebInterceptorChainFactory webInterceptorChainFactory;
@@ -37,7 +39,8 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
 
     private final List<WebInterceptor> errorInterceptors;
 
-    public RestControllerAndResponseBodyAdvice(WebContextFactory webContextFactory,
+    public RestControllerAndResponseBodyAdvice(WebConceptProperties properties,
+                                               WebContextFactory webContextFactory,
                                                WebInterceptorChainFactory webInterceptorChainFactory,
                                                List<WebInterceptor> interceptors) {
         Map<WebInterceptor.Type, List<WebInterceptor>> interceptorsMap = interceptors.stream()
@@ -45,6 +48,7 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
         this.requestInterceptors = interceptorsMap.getOrDefault(WebInterceptor.Type.REQUEST, new ArrayList<>());
         this.responseInterceptors = interceptorsMap.getOrDefault(WebInterceptor.Type.RESPONSE, new ArrayList<>());
         this.errorInterceptors = interceptorsMap.getOrDefault(WebInterceptor.Type.ERROR, new ArrayList<>());
+        this.properties = properties;
         this.webContextFactory = webContextFactory;
         this.webInterceptorChainFactory = webInterceptorChainFactory;
     }
@@ -56,22 +60,28 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
 
     @ModelAttribute
     public void modelAttribute(HttpServletRequest request, HttpServletResponse response) {
-        WebContext context = webContextFactory.create()
-                .put(HttpServletRequest.class, request)
-                .put(HttpServletResponse.class, response);
-        WebInterceptorChain chain = webInterceptorChainFactory.create(requestInterceptors);
-        chain.next(context);
+        if (properties.getIntercept().getRequest().isEnabled()) {
+            WebContext context = webContextFactory.create()
+                    .put(HttpServletRequest.class, request)
+                    .put(HttpServletResponse.class, response);
+            WebInterceptorChain chain = webInterceptorChainFactory.create(requestInterceptors);
+            chain.next(context);
+        }
     }
 
     @ExceptionHandler({Throwable.class})
     public Object handleException(HttpServletRequest request, HttpServletResponse response, Throwable e) {
-        WebContext context = webContextFactory.create()
-                .put(HttpServletRequest.class, request)
-                .put(HttpServletResponse.class, response)
-                .put(Throwable.class, e);
-        WebInterceptorChain chain = webInterceptorChainFactory.create(errorInterceptors);
-        chain.next(context);
-        return context.get(WebContext.Key.RESPONSE_BODY, e);
+        if (properties.getIntercept().getError().isEnabled()) {
+            WebContext context = webContextFactory.create()
+                    .put(HttpServletRequest.class, request)
+                    .put(HttpServletResponse.class, response)
+                    .put(Throwable.class, e);
+            WebInterceptorChain chain = webInterceptorChainFactory.create(errorInterceptors);
+            chain.next(context);
+            return context.get(WebContext.Key.RESPONSE_BODY, e);
+        } else {
+            return e;
+        }
     }
 
     @Override
@@ -87,17 +97,22 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request,
                                   @NonNull ServerHttpResponse response) {
-        WebContext context = webContextFactory.create()
-                .put(ServerHttpRequest.class, request)
-                .put(ServerHttpResponse.class, response)
-                .put(MethodParameter.class, returnType)
-                .put(MediaType.class, selectedContentType)
-                .put(HttpMessageConverter.class, selectedConverterType)
-                .put(WebContext.Key.RESPONSE_BODY, body);
-        WebInterceptorChain chain = webInterceptorChainFactory.create(responseInterceptors);
-        chain.next(context);
-        Object result = context.get(WebContext.Key.RESPONSE_BODY);
-        context.global().reset();
+        Object result;
+        if (properties.getIntercept().getResponse().isEnabled()) {
+            WebContext context = webContextFactory.create()
+                    .put(ServerHttpRequest.class, request)
+                    .put(ServerHttpResponse.class, response)
+                    .put(MethodParameter.class, returnType)
+                    .put(MediaType.class, selectedContentType)
+                    .put(HttpMessageConverter.class, selectedConverterType)
+                    .put(WebContext.Key.RESPONSE_BODY, body);
+            WebInterceptorChain chain = webInterceptorChainFactory.create(responseInterceptors);
+            chain.next(context);
+            result = context.get(WebContext.Key.RESPONSE_BODY);
+        } else {
+            result = body;
+        }
+        WebContext.getGlobal().reset();
         return result;
     }
 }

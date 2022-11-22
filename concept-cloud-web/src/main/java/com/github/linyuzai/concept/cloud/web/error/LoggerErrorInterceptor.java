@@ -1,6 +1,7 @@
 package com.github.linyuzai.concept.cloud.web.error;
 
 import com.github.linyuzai.concept.cloud.web.context.WebContext;
+import com.github.linyuzai.concept.cloud.web.interceptor.WebChainInterceptor;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebErrorInterceptor;
 import lombok.AllArgsConstructor;
 import lombok.extern.apachecommons.CommonsLog;
@@ -11,7 +12,7 @@ import java.util.function.Function;
 
 @CommonsLog
 @AllArgsConstructor
-public class LoggerErrorInterceptor implements WebErrorInterceptor {
+public class LoggerErrorInterceptor implements WebErrorInterceptor, WebChainInterceptor {
 
     private Function<WebContext, String> messageProvider;
 
