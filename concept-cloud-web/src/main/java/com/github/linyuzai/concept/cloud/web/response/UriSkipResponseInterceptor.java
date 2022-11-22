@@ -4,8 +4,13 @@ import com.github.linyuzai.concept.cloud.web.interceptor.UriSkipInterceptInterce
 import com.github.linyuzai.concept.cloud.web.interceptor.WebResponseInterceptor;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class UriSkipResponseInterceptor extends UriSkipInterceptInterceptor implements WebResponseInterceptor {
+
+    public UriSkipResponseInterceptor(String pattern) {
+        setPatterns(Collections.singleton(pattern));
+    }
 
     public UriSkipResponseInterceptor(Collection<String> patterns) {
         setPatterns(patterns);

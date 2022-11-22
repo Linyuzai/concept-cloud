@@ -9,11 +9,16 @@ import com.github.linyuzai.concept.cloud.web.error.LoggerErrorInterceptor;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebInterceptor;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebInterceptorChainFactory;
 import com.github.linyuzai.concept.cloud.web.interceptor.WebInterceptorChainFactoryImpl;
+import com.github.linyuzai.concept.cloud.web.interceptor.condition.ConditionalOnErrorInterceptEnabled;
+import com.github.linyuzai.concept.cloud.web.interceptor.condition.ConditionalOnRequestInterceptEnabled;
+import com.github.linyuzai.concept.cloud.web.interceptor.condition.ConditionalOnResponseInterceptEnabled;
+import com.github.linyuzai.concept.cloud.web.interceptor.condition.ConditionalOnWebInterceptEnabled;
 import com.github.linyuzai.concept.cloud.web.request.UriSkipRequestInterceptor;
 import com.github.linyuzai.concept.cloud.web.response.*;
 import com.github.linyuzai.concept.cloud.web.result.WebResultFactory;
 import com.github.linyuzai.concept.cloud.web.result.WebResultFactoryAdapter;
 import com.github.linyuzai.concept.cloud.web.result.WebResultFactoryAdapterImpl;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,7 +45,7 @@ public class WebConceptConfiguration {
     }
 
     @Configuration
-    @ConditionalOnProperty(name = "concept.cloud.web.intercept.enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnWebInterceptEnabled
     public static class InterceptConfiguration {
 
         @Bean
@@ -50,7 +55,7 @@ public class WebConceptConfiguration {
         }
 
         @Configuration
-        @ConditionalOnProperty(name = "concept.cloud.web.intercept.request.enabled", havingValue = "true", matchIfMissing = true)
+        @ConditionalOnRequestInterceptEnabled
         public static class RequestConfiguration {
 
             @Bean
@@ -61,7 +66,7 @@ public class WebConceptConfiguration {
         }
 
         @Configuration
-        @ConditionalOnProperty(name = "concept.cloud.web.intercept.response.enabled", havingValue = "true", matchIfMissing = true)
+        @ConditionalOnResponseInterceptEnabled
         public static class ResponseConfiguration {
 
             @Bean
@@ -104,7 +109,7 @@ public class WebConceptConfiguration {
         }
 
         @Configuration
-        @ConditionalOnProperty(name = "concept.cloud.web.intercept.error.enabled", havingValue = "true", matchIfMissing = true)
+        @ConditionalOnErrorInterceptEnabled
         public static class ErrorConfiguration {
 
             @Bean
@@ -120,10 +125,31 @@ public class WebConceptConfiguration {
 
         @Bean
         public RestControllerAndResponseBodyAdvice restControllerAndResponseBodyAdvice(WebConceptProperties properties,
-                                                                                       WebContextFactory webContextFactory,
-                                                                                       WebInterceptorChainFactory webInterceptorChainFactory,
+                                                                                       WebContextFactory contextFactory,
+                                                                                       WebInterceptorChainFactory chainFactory,
                                                                                        List<WebInterceptor> interceptors) {
-            return new RestControllerAndResponseBodyAdvice(properties, webContextFactory, webInterceptorChainFactory, interceptors);
+            return new RestControllerAndResponseBodyAdvice(properties, contextFactory, chainFactory, interceptors);
+        }
+
+        @Configuration
+        public static class SwaggerConfiguration {
+
+            @Configuration
+            public static class SpringFoxConfiguration {
+
+            }
+
+            @Configuration
+            @ConditionalOnClass(name = "org.springdoc.core.OpenAPIService")
+            @ConditionalOnProperty(name = "springdoc.api-docs.enabled", matchIfMissing = true)
+            public static class SpringDocConfiguration {
+
+                @Bean
+                @ConditionalOnProperty(name = "concept.cloud.web.intercept.response.skip.swagger", havingValue = "true", matchIfMissing = true)
+                public UriSkipResponseInterceptor swaggerSkipResponseInterceptor() {
+                    return new UriSkipResponseInterceptor(".*swagger.*");
+                }
+            }
         }
     }
 }
