@@ -144,10 +144,20 @@ public class WebConceptConfiguration {
             @ConditionalOnProperty(name = "springdoc.api-docs.enabled", matchIfMissing = true)
             public static class SpringDocConfiguration {
 
+                private static final String SWAGGER_SPRING_DOC_PATTERN = "/**/api-docs/**";
+
                 @Bean
+                @ConditionalOnRequestInterceptEnabled
+                @ConditionalOnProperty(name = "concept.cloud.web.intercept.request.skip.swagger", havingValue = "true", matchIfMissing = true)
+                public UriSkipRequestInterceptor swaggerSkipRequestInterceptor() {
+                    return new UriSkipRequestInterceptor(SWAGGER_SPRING_DOC_PATTERN);
+                }
+
+                @Bean
+                @ConditionalOnResponseInterceptEnabled
                 @ConditionalOnProperty(name = "concept.cloud.web.intercept.response.skip.swagger", havingValue = "true", matchIfMissing = true)
                 public UriSkipResponseInterceptor swaggerSkipResponseInterceptor() {
-                    return new UriSkipResponseInterceptor(".*swagger.*");
+                    return new UriSkipResponseInterceptor(SWAGGER_SPRING_DOC_PATTERN);
                 }
             }
         }

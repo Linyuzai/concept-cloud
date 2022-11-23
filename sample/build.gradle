@@ -2,4 +2,5 @@ version "${ConceptSample}"
 
 dependencies {
     implementation project(':concept-cloud-web')
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
 }

@@ -48,6 +48,8 @@ public class WebConceptProperties {
         public static class SkipProperties {
 
             private List<String> urls;
+
+            private boolean swagger = true;
         }
     }
 }

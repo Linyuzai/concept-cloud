@@ -32,6 +32,7 @@ allprojects {
         compileOnly 'io.swagger.core.v3:swagger-annotations:2.2.6'
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
+        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     }
 
     //依赖管理

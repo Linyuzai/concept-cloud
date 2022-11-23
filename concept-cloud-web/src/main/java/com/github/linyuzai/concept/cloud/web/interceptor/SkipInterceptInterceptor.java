@@ -12,5 +12,10 @@ public abstract class SkipInterceptInterceptor implements WebInterceptor {
         chain.next(context);
     }
 
+    @Override
+    public int getOrder() {
+        return Order.SKIP;
+    }
+
     public abstract boolean shouldSkip(WebContext context);
 }

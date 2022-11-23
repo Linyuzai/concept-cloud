@@ -30,6 +30,8 @@ public interface WebInterceptor extends Ordered {
 
     class Order {
 
+        public static final int SKIP = Ordered.HIGHEST_PRECEDENCE + 100;
+
         //Response
         public static final int RESULT_MESSAGE = 0;
 

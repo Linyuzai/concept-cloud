@@ -1,0 +1,6 @@
+concept:
+  cloud:
+    web:
+      intercept:
+        response:
+          enabled: true
