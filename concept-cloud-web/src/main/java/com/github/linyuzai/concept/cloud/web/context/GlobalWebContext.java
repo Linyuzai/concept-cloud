@@ -6,14 +6,8 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class GlobalWebContext implements WebContext {
 
-    //TODO TransmittableThreadLocal
-    private static final ThreadLocal<Map<Object, Object>> CONTEXT = new InheritableThreadLocal<Map<Object, Object>>() {
-
-        @Override
-        protected Map<Object, Object> initialValue() {
-            return new LinkedHashMap<>();
-        }
-    };
+    //TODO Use InheritableThreadLocal or TransmittableThreadLocal if necessity
+    private static final ThreadLocal<Map<Object, Object>> CONTEXT = ThreadLocal.withInitial(LinkedHashMap::new);
 
     @Override
     public WebContext put(Object key, Object value) {
