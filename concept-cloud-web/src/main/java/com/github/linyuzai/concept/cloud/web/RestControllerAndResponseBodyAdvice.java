@@ -15,6 +15,10 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<Object> {
+public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<Object>, WebMvcConfigurer {
 
     private final WebConceptProperties properties;
 
@@ -61,7 +65,7 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
     @ModelAttribute
     public void modelAttribute(HttpServletRequest request, HttpServletResponse response) {
         if (properties.getIntercept().getRequest().isEnabled()) {
-            WebContext context = contextFactory.create()
+            WebContext context = getOrCreateContext()
                     .put(HttpServletRequest.class, request)
                     .put(HttpServletResponse.class, response);
             WebInterceptorChain chain = chainFactory.create(requestInterceptors);
@@ -72,7 +76,7 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
     @ExceptionHandler({Throwable.class})
     public Object handleException(HttpServletRequest request, HttpServletResponse response, Throwable e) {
         if (properties.getIntercept().getError().isEnabled()) {
-            WebContext context = contextFactory.create()
+            WebContext context = getOrCreateContext()
                     .put(HttpServletRequest.class, request)
                     .put(HttpServletResponse.class, response)
                     .put(Throwable.class, e);
@@ -99,7 +103,7 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
                                   @NonNull ServerHttpResponse response) {
         Object result;
         if (properties.getIntercept().getResponse().isEnabled()) {
-            WebContext context = contextFactory.create()
+            WebContext context = getOrCreateContext()
                     .put(ServerHttpRequest.class, request)
                     .put(ServerHttpResponse.class, response)
                     .put(MethodParameter.class, returnType)
@@ -114,5 +118,37 @@ public class RestControllerAndResponseBodyAdvice implements ResponseBodyAdvice<O
         }
         WebContext.getGlobal().reset();
         return result;
+    }
+
+    protected WebContext getOrCreateContext() {
+        WebContext context = WebContext.getGlobal().get(WebContext.class);
+        if (context == null) {
+            WebContext newContext = contextFactory.create();
+            WebContext.getGlobal().put(WebContext.class, newContext);
+            return newContext;
+        } else {
+            return context;
+        }
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new HandlerMethodHandlerInterceptor());
+    }
+
+    public class HandlerMethodHandlerInterceptor implements HandlerInterceptor {
+
+        @Override
+        public boolean preHandle(@NonNull HttpServletRequest request,
+                                 @NonNull HttpServletResponse response,
+                                 @NonNull Object handler) throws Exception {
+            if (handler instanceof HandlerMethod && (
+                    properties.getIntercept().getRequest().isEnabled() ||
+                            properties.getIntercept().getResponse().isEnabled() ||
+                            properties.getIntercept().getError().isEnabled())) {
+                getOrCreateContext().put(HandlerMethod.class, handler);
+            }
+            return true;
+        }
     }
 }
